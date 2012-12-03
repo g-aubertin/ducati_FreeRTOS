@@ -1,0 +1,45 @@
+/* linker script based on the readme from
+   the gcc-arm-none-eabi-4_6-2012q2 toolchain */
+
+MEMORY
+{
+
+    TEXT (rx) : ORIGIN = 0x00000000, LENGTH = 256K
+    DATA (rwx) : ORIGIN = 0x80000000, LENGTH = 256K
+    TRACE (rwx) : ORIGIN = 0x9F000000, LENGTH = 8000K
+}
+
+SECTIONS
+{
+    .text :
+    {
+	KEEP(*(.vectors))
+	*(.text)
+	*(.rodata*)
+    } > TEXT
+
+    .data :
+    {
+	*(vtable)
+	*(.data*)
+    } > DATA
+
+    .bss :
+    {
+	__bss_start__ = .;
+	*(.bss*)
+	*(COMMON)
+	__bss_end__ = .;
+    } > DATA
+
+    .resource_table :
+    {
+	_resource_table = .;
+    } > DATA
+
+    .tracebuf :
+    {
+	_tracebuf = .;
+    } > TRACE
+
+}
