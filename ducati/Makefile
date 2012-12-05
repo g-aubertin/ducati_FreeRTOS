@@ -42,7 +42,8 @@ INIT_OBJS=${OUTPUT_DIR}/startup.o
 # gcc compiler flags
 CFLAGS=-mthumb         \
        -mcpu=cortex-m3 \
-       -MD
+       -MD \
+       -O2
 
 # gcc source flags
 CFLAGS+= -I . \
