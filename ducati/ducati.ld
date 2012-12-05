@@ -4,7 +4,7 @@
 MEMORY
 {
 
-    TEXT (rx) : ORIGIN = 0x00000000, LENGTH = 256K
+    TEXT (rwx) : ORIGIN = 0x00000000, LENGTH = 256K
     DATA (rwx) : ORIGIN = 0x80000000, LENGTH = 256K
     TRACE (rwx) : ORIGIN = 0x9F000000, LENGTH = 8000K
 }
@@ -26,10 +26,10 @@ SECTIONS
 
     .bss :
     {
-	__bss_start__ = .;
+	_bss = .;
 	*(.bss*)
 	*(COMMON)
-	__bss_end__ = .;
+	_ebss = .;
     } > DATA
 
     .resource_table :

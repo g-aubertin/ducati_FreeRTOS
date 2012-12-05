@@ -9,8 +9,8 @@
 #define STACK_SIZE 256
 static unsigned long sys_stack[STACK_SIZE];
 
-extern unsigned long __bss_start__;
-extern unsigned long __bss_end__;
+extern unsigned long _bss;
+extern unsigned long _ebss;
 
 /* we must wait for the vring to be initialised by the host */
 unsigned int init_done = 0 ;
@@ -28,8 +28,8 @@ void ResetISR(void)
 
 	/* set bss to zero and jump to main */
 
-	bss = (void*)__bss_start__ ;
-	while (bss < (unsigned int*)__bss_end__)
+	bss = &_bss ;
+	while (bss < &_ebss)
 		*bss++ = 0;
 
 	main();
