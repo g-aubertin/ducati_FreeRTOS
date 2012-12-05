@@ -1,5 +1,10 @@
 /* startup.c */
 
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+#include "semphr.h"
+
 #include "trace.h"
 #include "mailbox.h"
 #include "common.h"
@@ -11,6 +16,8 @@ static unsigned long sys_stack[STACK_SIZE];
 
 extern unsigned long _bss;
 extern unsigned long _ebss;
+
+extern xQueueHandle MboxQueue;
 
 /* we must wait for the vring to be initialised by the host */
 unsigned int init_done = 0 ;
@@ -70,6 +77,8 @@ static void MailBoxHandler(void)
 
 	/* clear the NVIC mailbox irq */
 	nvic_clear_irq(MAILBOX_IRQ);
+
+	xQueueSend(MboxQueue, &msg, portMAX_DELAY);
 
 	switch(msg) {
 
