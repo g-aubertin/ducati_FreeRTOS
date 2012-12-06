@@ -25,24 +25,19 @@ void enable_mailbox_irq(void)
 	write32(MAILBOX_IRQENABLE_SET_M3, 0x1);
 }
 
+unsigned int mailbox_get_status(void)
+{
+	volatile unsigned int status;
+
+	status = read32(MAILBOX_STATUS(HOST_TO_M3_MBX));
+	return status;
+}
+
 unsigned int mailbox_read(void)
 {
 	volatile unsigned int msg;
 
-	// look at the msg status
-	msg = read32(MAILBOX_STATUS(HOST_TO_M3_MBX));
-	trace_printf("mailbox status : ");
-	trace_value(msg);
-
-	// look at the fifo status
-	msg = read32(MAILBOX_FIFOSTATUS(HOST_TO_M3_MBX));
-	trace_printf("fifo status : ");
-	trace_value(msg);
-
-	// finally, get the message
 	msg = read32(MAILBOX_MESSAGE(HOST_TO_M3_MBX));
-	trace_printf("mailbox register dump : ");
-	trace_value(msg);
 	write32(MAILBOX_IRQSTATUS_CLR_M3, 0x1);
 
 	return msg;

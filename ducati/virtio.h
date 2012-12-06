@@ -16,6 +16,11 @@ enum rpmsg_mailbox_msg {
     RP_MSG_HIBERNATION_CANCEL   = 0xFFFFFF13
 };
 
+enum rpmsg_mailbox_kick {
+	M3_TO_HOST_VRING = 0,
+	HOST_TO_M3_VRING = 1,
+};
+
 struct virtqueue {
 	unsigned int id;
 	struct vring *vring;

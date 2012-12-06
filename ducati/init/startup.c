@@ -19,9 +19,6 @@ extern unsigned long _ebss;
 
 extern xQueueHandle MboxQueue;
 
-/* we must wait for the vring to be initialised by the host */
-unsigned int init_done = 0 ;
-
 /* FreeRTOS Port for m3 */
 extern void xPortPendSVHandler(void);
 extern void xPortSysTickHandler(void);
@@ -67,37 +64,19 @@ static void IntDefaultHandler(void)
 
 static void MailBoxHandler(void)
 {
-	unsigned int ret, msg;
-	struct virtqueue_buf virtq_buf;
+	unsigned int msg, nb_msg;
 
 	trace_printf("mailbox irq received ! \n");
 
-	/* clean the mailbox irq */
-	msg = mailbox_read();
-
-	/* clear the NVIC mailbox irq */
+        /* clear the NVIC mailbox irq */
 	nvic_clear_irq(MAILBOX_IRQ);
 
-	xQueueSend(MboxQueue, &msg, portMAX_DELAY);
+	nb_msg = mailbox_get_status();
 
-	switch(msg) {
-
-	case RP_MBOX_ECHO_REQUEST :
-		mailbox_send(M3_TO_HOST_MBX, RP_MBOX_ECHO_REPLY );
-		break;
-
-	case 0x1:
-		ret = virtqueue_get_avail_buf(&virtqueue_list[msg], &virtq_buf);
-		trace_printf("buffer returned from get_avail_buf: ");
-		trace_value((unsigned int)(virtq_buf.buf_ptr));
-		virtqueue_add_used_buf(&virtqueue_list[msg], virtq_buf.head);
-		break;
-
-	case 0x0:
-		trace_printf("mailbox msg = 0 \n");
-		if (init_done == 0)
-			init_done = 1 ;
-		break;
+	while (nb_msg > 0) {
+		msg = mailbox_read();
+		xQueueSend(MboxQueue, &msg, portMAX_DELAY);
+		nb_msg--;
 	}
 }
 
