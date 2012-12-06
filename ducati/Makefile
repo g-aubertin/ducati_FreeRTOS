@@ -27,6 +27,7 @@ OBJS=	${OUTPUT_DIR}/main.o \
 	${OUTPUT_DIR}/interrupt.o \
 	${OUTPUT_DIR}/virtio.o \
 	${OUTPUT_DIR}/rpmsg.o \
+	${OUTPUT_DIR}/rdaemon.o \
 	${OUTPUT_DIR}/list.o \
 	${OUTPUT_DIR}/queue.o \
 	${OUTPUT_DIR}/tasks.o \

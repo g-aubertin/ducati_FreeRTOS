@@ -41,16 +41,13 @@ enum rpmsg_ns_flags {
     RPMSG_NS_DESTROY = 1
 };
 
-
-void namemap_register(void)
+void namemap_register(char *ns_name, unsigned int port)
 {
 	unsigned int ret;
 	struct rpmsg_ns_msg *ns_msg;
 	struct rpmsg_hdr *hdr;
 	struct virtqueue_buf virtq_buf;
 	unsigned int *dst;
-
-	trace_printf("namemap_register \n");
 
 	// get the buffer
 	ret = virtqueue_get_avail_buf(&virtqueue_list[0], &virtq_buf);
@@ -63,7 +60,7 @@ void namemap_register(void)
 	trace_value((unsigned int)hdr);
 	trace_value((unsigned int)ns_msg);
 
-	hdr->src = 43;
+	hdr->src = port;
 	hdr->dst = 53;
 	hdr->len = sizeof(struct rpmsg_ns_msg);
 	hdr->flags = 0;

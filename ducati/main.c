@@ -17,12 +17,12 @@
 #include "trace.h"
 #include "interrupt.h"
 #include "virtio.h"
-
-/* we must wait for the vring to be initialised by the host */
-unsigned int init_done = 0 ;
+#include "rdaemon.h"
 
 xQueueHandle MboxQueue;
 
+/* we must wait for the vring to be initialised by the host */
+xSemaphoreHandle InitDoneSemaphore;
 
 static void IpcTask (void * pvParameters)
 {
@@ -53,12 +53,8 @@ static void IpcTask (void * pvParameters)
 			break;
 
 		case M3_TO_HOST_VRING :
-			trace_printf("mailbox msg = 0 \n");
-			if (init_done == 0) {
-				init_done = 1 ;
-				namemap_register();
-			}
-
+			trace_printf("kick on vq0, dropping it \n");
+			xSemaphoreGive(InitDoneSemaphore);
 			break;
 		}
 
@@ -76,7 +72,12 @@ int main( void )
 	trace_printf("--------\n");
 
 	MboxQueue = xQueueCreate( 32, sizeof( unsigned int* ) );
+	vSemaphoreCreateBinary(InitDoneSemaphore);
+
+	xSemaphoreTake(InitDoneSemaphore, portMAX_DELAY);
+
 	xTaskCreate(IpcTask, "IpcTask", 100, NULL, 2, NULL);
+	xTaskCreate(RdaemonTask, "RdaemonTask", 100, NULL, 2, NULL);
 
 	/* Start the scheduler. */
 	vTaskStartScheduler();
