@@ -68,9 +68,6 @@ static void MailBoxHandler(void)
 
 	trace_printf("mailbox irq received ! \n");
 
-        /* clear the NVIC mailbox irq */
-	nvic_clear_irq(MAILBOX_IRQ);
-
 	nb_msg = mailbox_get_status();
 
 	while (nb_msg > 0) {
@@ -78,6 +75,9 @@ static void MailBoxHandler(void)
 		xQueueSend(MboxQueue, &msg, portMAX_DELAY);
 		nb_msg--;
 	}
+
+        /* clear the NVIC mailbox irq */
+	nvic_clear_irq(MAILBOX_IRQ);
 }
 
 void *vector_table[] __attribute__ ((section(".vectors"))) = {
