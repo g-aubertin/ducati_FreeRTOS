@@ -18,6 +18,8 @@
 #include "interrupt.h"
 #include "virtio.h"
 #include "rdaemon.h"
+#include "rpmsg.h"
+
 
 xQueueHandle MboxQueue;
 
@@ -34,6 +36,7 @@ static void IpcTask (void * pvParameters)
 	nvic_enable_irq(MAILBOX_IRQ);
 	enable_mailbox_irq();
 
+
 	for (;;) {
 		xQueueReceive(MboxQueue, &msg, portMAX_DELAY);
 		trace_printf("msg from mailbox : ");
@@ -47,9 +50,21 @@ static void IpcTask (void * pvParameters)
 
 		case HOST_TO_M3_VRING :
 			ret = virtqueue_get_avail_buf(&virtqueue_list[msg], &virtq_buf);
+
+			// todo : make a local copy of the buffer
+			
+
+			// push in queue to the appropriate service
+
+			virtqueue_add_used_buf(&virtqueue_list[msg], virtq_buf.head);			
+
+			// dispatch to the service queue
+			rpmsg_dispatch_msg(&virtq_buf);
+			
+#if 0
 			trace_printf("buffer returned from get_avail_buf: ");
 			trace_value((unsigned int)(virtq_buf.buf_ptr));
-			virtqueue_add_used_buf(&virtqueue_list[msg], virtq_buf.head);
+#endif
 			break;
 
 		case M3_TO_HOST_VRING :
