@@ -36,6 +36,8 @@ struct virtqueue_buf {
 	unsigned int head;
 };
 
+#define RP_MSG_BUF_SIZE     (512)
+
 void virtqueue_init(void);
 int virtqueue_get_avail_buf(struct virtqueue *vq, struct virtqueue_buf *virtq_buf);
 void virtqueue_add_used_buf(struct virtqueue *vq, unsigned int head);

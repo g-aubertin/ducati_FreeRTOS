@@ -11,18 +11,33 @@
 #include "rdaemon.h"
 
 extern xSemaphoreHandle InitDoneSemaphore;
+xQueueHandle RdaemonQueue;
 
 void RdaemonTask(void *pvParameters)
 {
-	char *ns_name = "rpmsg-rdaemon";
-	unsigned int len ; 
+	struct service serv;
+	struct rdaemon_msg_frame *payload;
+
+	RdaemonQueue = xQueueCreate( 32, sizeof( unsigned int* ) );
+
+	strncpy(serv.name, "rpmsg-rdaemon", 32);
+	serv.port = RDAEMON_PORT;
+	serv.queue = &RdaemonQueue;
 
 	xSemaphoreTake(InitDoneSemaphore, portMAX_DELAY);
 
-	len = strlen(ns_name);
-	namemap_register(ns_name, RDAEMON_PORT);
+	rpmsg_service_register(&serv);
 
 	xSemaphoreGive(InitDoneSemaphore);
+
+	for (;;) {
+		xQueueReceive(RdaemonQueue, &payload, portMAX_DELAY);
+
+		if (payload->msg_type == RDAEMON_PING) {
+			trace_printf("rdaemon ping : ");
+			trace_value(payload->data) ;
+		}
+	}
 
 	while(1);
 }

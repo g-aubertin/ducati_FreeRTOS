@@ -18,6 +18,7 @@
 #include "interrupt.h"
 #include "virtio.h"
 #include "rdaemon.h"
+#include "rpmsg.h"
 
 xQueueHandle MboxQueue;
 
@@ -26,7 +27,7 @@ xSemaphoreHandle InitDoneSemaphore;
 
 static void IpcTask (void * pvParameters)
 {
-	unsigned int msg;
+	unsigned int msg, *local_vq_buf;
 	int ret;
 	struct virtqueue_buf virtq_buf;
 
@@ -47,9 +48,16 @@ static void IpcTask (void * pvParameters)
 
 		case HOST_TO_M3_VRING :
 			ret = virtqueue_get_avail_buf(&virtqueue_list[msg], &virtq_buf);
-			trace_printf("buffer returned from get_avail_buf: ");
-			trace_value((unsigned int)(virtq_buf.buf_ptr));
+
+			/* make a local copy of the buffer */
+			local_vq_buf = pvPortMalloc(RP_MSG_BUF_SIZE);
+			memcpy(local_vq_buf, virtq_buf.buf_ptr, RP_MSG_BUF_SIZE);
+
 			virtqueue_add_used_buf(&virtqueue_list[msg], virtq_buf.head);
+
+			/* dispatch to the service queue */
+			rpmsg_dispatch_msg(local_vq_buf);
+
 			break;
 
 		case M3_TO_HOST_VRING :
@@ -57,7 +65,6 @@ static void IpcTask (void * pvParameters)
 			xSemaphoreGive(InitDoneSemaphore);
 			break;
 		}
-
 	}
 	vTaskDelete(NULL);
 }

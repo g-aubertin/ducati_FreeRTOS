@@ -7,7 +7,6 @@
 
 // rpmsg values / to be aligned with kernel definitions
 #define RP_MSG_NUM_BUFS     256
-#define RP_MSG_BUF_SIZE     (512)
 #define PAGE_SIZE           (4096)
 
 struct vring vring_rx, vring_tx;
