@@ -26,6 +26,7 @@ void RdaemonTask(void *pvParameters)
 
 	xSemaphoreTake(InitDoneSemaphore, portMAX_DELAY);
 
+	trace_printf("registering rdaemon task... \n");
 	rpmsg_service_register(&serv);
 
 	xSemaphoreGive(InitDoneSemaphore);

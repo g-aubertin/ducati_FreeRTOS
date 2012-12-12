@@ -66,8 +66,6 @@ static void MailBoxHandler(void)
 {
 	unsigned int msg, nb_msg;
 
-	trace_printf("mailbox irq received ! \n");
-
 	nb_msg = mailbox_get_status();
 
 	while (nb_msg > 0) {

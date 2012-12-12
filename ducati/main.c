@@ -37,8 +37,6 @@ static void IpcTask (void * pvParameters)
 
 	for (;;) {
 		xQueueReceive(MboxQueue, &msg, portMAX_DELAY);
-		trace_printf("msg from mailbox : ");
-		trace_value(msg);
 
 		switch(msg) {
 
@@ -61,7 +59,6 @@ static void IpcTask (void * pvParameters)
 			break;
 
 		case M3_TO_HOST_VRING :
-			trace_printf("kick on vq0, dropping it \n");
 			xSemaphoreGive(InitDoneSemaphore);
 			break;
 		}

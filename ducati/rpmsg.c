@@ -65,9 +65,6 @@ void rpmsg_service_register(struct service *serv)
 	hdr = (struct rpmsg_hdr *)virtq_buf.buf_ptr;
 	ns_msg = (struct rpmsg_ns_msg *)&hdr->data;
 
-	trace_value((unsigned int)hdr);
-	trace_value((unsigned int)ns_msg);
-
 	hdr->src = serv->port;
 	hdr->dst = 53;
 	hdr->len = sizeof(struct rpmsg_ns_msg);

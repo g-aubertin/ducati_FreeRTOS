@@ -55,14 +55,8 @@ int virtqueue_get_avail_buf(struct virtqueue *vq, struct virtqueue_buf *virtq_bu
 	// the head gives us the buf addr in the vring_descriptor
 	buf_pa = (unsigned int)vq->vring->desc[head].addr;
 
-	trace_printf("get_avail_buf pa addr: ");
-	trace_value(buf_pa);
-
 	virtq_buf->buf_ptr = (unsigned int *)pa_to_da(buf_pa);
 	virtq_buf->head = head;
-
-	trace_printf("get_avail_buf da addr: ");
-	trace_value(virtq_buf->buf_ptr);
 
 	return 0;
 }
