@@ -19,6 +19,8 @@ extern unsigned long _ebss;
 
 extern xQueueHandle MboxQueue;
 
+#define PID_REG 0xE00FFFE0
+
 /* FreeRTOS Port for m3 */
 extern void xPortPendSVHandler(void);
 extern void xPortSysTickHandler(void);
@@ -29,6 +31,10 @@ extern int main(void);
 void ResetISR(void)
 {
 	unsigned int *bss;
+
+	/* if we are core1, go to sleep */
+	if (read32(PID_REG) != 0)
+		asm volatile ("wfi");
 
 	/* set bss to zero and jump to main */
 
