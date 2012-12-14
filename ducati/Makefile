@@ -44,7 +44,8 @@ INIT_OBJS=${OUTPUT_DIR}/startup.o
 CFLAGS=-mthumb         \
        -mcpu=cortex-m3 \
        -MD \
-       -O2
+       -O2 \
+       -fno-stack-protector
 
 # gcc source flags
 CFLAGS+= -I . \
