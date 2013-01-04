@@ -35,6 +35,7 @@ OBJS=	${OUTPUT_DIR}/main.o \
 	${OUTPUT_DIR}/PollQ.o	\
 	${OUTPUT_DIR}/integer.o \
 	${OUTPUT_DIR}/semtest.o \
+	${OUTPUT_DIR}/alloc.o
 
 INIT_OBJS=${OUTPUT_DIR}/startup.o
 

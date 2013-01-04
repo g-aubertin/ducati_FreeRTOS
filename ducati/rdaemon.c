@@ -34,11 +34,25 @@ void RdaemonTask(void *pvParameters)
 	for (;;) {
 		xQueueReceive(RdaemonQueue, &payload, portMAX_DELAY);
 
-		if (payload->msg_type == RDAEMON_PING) {
+		switch (payload->msg_type) {
+
+		case RDAEMON_PING :
 			trace_printf("rdaemon ping : ");
-			trace_value(payload->data) ;
+//			trace_value(payload->data);
+			break;
+
+		case RDAEMON_MEMSTAT :
+			trace_printf("remaining heap : ");
+//			trace_value(xPortGetFreeHeapSize());
+			break;
 		}
+
+		rpmsg_free_buffer(payload);
 	}
+
+
+
+
 
 	while(1);
 }

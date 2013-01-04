@@ -47,7 +47,8 @@ static void IpcTask (void * pvParameters)
 		case HOST_TO_M3_VRING :
 			ret = virtqueue_get_avail_buf(&virtqueue_list[msg], &virtq_buf);
 
-			/* make a local copy of the buffer */
+			/* make a local copy of the buffer, it must be freed from the
+			   service task */
 			local_vq_buf = pvPortMalloc(RP_MSG_BUF_SIZE);
 			memcpy(local_vq_buf, virtq_buf.buf_ptr, RP_MSG_BUF_SIZE);
 
@@ -71,9 +72,17 @@ static void IpcTask (void * pvParameters)
 int main( void )
 {
 
+	char variable[245];
+	char prenom[] = "bali";
+	char nom[] = "balo";
+	int bateaux = 10;
+
 	trace_printf("--------\n");
 	trace_printf("FreeRTOS\n");
 	trace_printf("--------\n");
+
+	sprintf(variable, "%s et %s sont sur %d bateaux \n", prenom, nom, bateaux);
+	trace_printf(variable);
 
 	MboxQueue = xQueueCreate( 32, sizeof( unsigned int* ) );
 	vSemaphoreCreateBinary(InitDoneSemaphore);

@@ -10,6 +10,7 @@
 #include <string.h>
 
 #define MAX_SERVICE 64
+#define RPMSG_HDR_SIZE 4 /*4 times 32 bits */
 
 /* taken from linux/rpmsg.h */
 struct rpmsg_hdr {
@@ -35,6 +36,13 @@ enum rpmsg_ns_flags {
 
 struct service service_list[MAX_SERVICE];
 unsigned int service_id = 0;
+
+void rpmsg_free_buffer(void *payload)
+{
+
+	vPortFree(payload - RPMSG_HDR_SIZE);
+
+}
 
 void rpmsg_dispatch_msg(unsigned int *vq_buf)
 {

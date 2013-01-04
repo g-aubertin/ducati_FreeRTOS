@@ -8,6 +8,7 @@
 /* message type */
 enum rdaemon_msg_type {
 	RDAEMON_PING,
+	RDAEMON_MEMSTAT,
 };
 
 /* message frame */
